@@ -18,3 +18,6 @@ def printDesc(n):
 if __name__ == "__main__":
     n = 10
     printDesc(n)
+
+
+# TC O(n), Auxillary Space O(n)

@@ -15,3 +15,5 @@ def printAsc(n):
 
 n = 7
 printAsc(n)
+
+# Time Complexity O(n), Space Complexity O(n)

@@ -13,6 +13,8 @@ Reverse of max is not max.
 '''
 
 def palin(s):
+  if len(s) == 0:
+    return True
   if len(s) == 1:
     return True
   if s[0] == s[-1]:
