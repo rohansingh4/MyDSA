@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Tic Tac Toe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .status {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 20px;
+            min-height: 30px;
+            font-weight: 500;
+        }
+
+        .status.winner {
+            color: #28a745;
+            font-weight: 700;
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        .status.draw {
+            color: #ffc107;
+            font-weight: 700;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+            aspect-ratio: 1;
+            max-width: 320px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: linear-gradient(145deg, #f0f0f0, #e6e6e6);
+            border: none;
+            border-radius: 15px;
+            font-size: 3rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1),
+                        -5px -5px 15px rgba(255, 255, 255, 0.8);
+        }
+
+        .cell:active {
+            transform: scale(0.95);
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1),
+                        -2px -2px 8px rgba(255, 255, 255, 0.8);
+        }
+
+        .cell.x {
+            color: #e74c3c;
+            text-shadow: 2px 2px 4px rgba(231, 76, 60, 0.3);
+        }
+
+        .cell.o {
+            color: #3498db;
+            text-shadow: 2px 2px 4px rgba(52, 152, 219, 0.3);
+        }
+
+        .cell.win {
+            background: linear-gradient(145deg, #d4edda, #c3e6cb);
+            animation: winPulse 0.6s ease-in-out infinite alternate;
+        }
+
+        @keyframes winPulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        .cell:disabled {
+            cursor: not-allowed;
+        }
+
+        .scores {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .score-value.x {
+            color: #e74c3c;
+        }
+
+        .score-value.o {
+            color: #3498db;
+        }
+
+        .score-value.draw {
+            color: #ffc107;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button.btn {
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        button.btn:active {
+            transform: scale(0.95);
+        }
+
+        .mode-toggle {
+            margin-bottom: 20px;
+        }
+
+        .toggle-btn {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .toggle-btn:first-child {
+            border-radius: 20px 0 0 20px;
+        }
+
+        .toggle-btn:last-child {
+            border-radius: 0 20px 20px 0;
+        }
+
+        @media (max-width: 380px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .cell {
+                font-size: 2.5rem;
+                border-radius: 12px;
+            }
+
+            .board {
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tic Tac Toe</h1>
+
+        <div class="mode-toggle">
+            <button class="toggle-btn active" id="vsPlayer">2 Players</button>
+            <button class="toggle-btn" id="vsAI">vs AI</button>
+        </div>
+
+        <div class="status" id="status">Player X's turn</div>
+
+        <div class="board" id="board">
+            <button class="cell" data-index="0"></button>
+            <button class="cell" data-index="1"></button>
+            <button class="cell" data-index="2"></button>
+            <button class="cell" data-index="3"></button>
+            <button class="cell" data-index="4"></button>
+            <button class="cell" data-index="5"></button>
+            <button class="cell" data-index="6"></button>
+            <button class="cell" data-index="7"></button>
+            <button class="cell" data-index="8"></button>
+        </div>
+
+        <div class="scores">
+            <div class="score-item">
+                <div class="score-label">Player X</div>
+                <div class="score-value x" id="scoreX">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Draws</div>
+                <div class="score-value draw" id="scoreDraw">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Player O</div>
+                <div class="score-value o" id="scoreO">0</div>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button class="btn btn-primary" id="newGame">New Game</button>
+            <button class="btn btn-secondary" id="resetScores">Reset All</button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let currentPlayer = 'X';
+        let gameActive = true;
+        let vsAI = false;
+        let scores = { X: 0, O: 0, draw: 0 };
+
+        // Winning combinations
+        const winPatterns = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+            [0, 4, 8], [2, 4, 6]              // Diagonals
+        ];
+
+        // DOM elements
+        const cells = document.querySelectorAll('.cell');
+        const statusDisplay = document.getElementById('status');
+        const newGameBtn = document.getElementById('newGame');
+        const resetScoresBtn = document.getElementById('resetScores');
+        const vsPlayerBtn = document.getElementById('vsPlayer');
+        const vsAIBtn = document.getElementById('vsAI');
+        const scoreX = document.getElementById('scoreX');
+        const scoreO = document.getElementById('scoreO');
+        const scoreDraw = document.getElementById('scoreDraw');
+
+        // Initialize game
+        function init() {
+            cells.forEach(cell => {
+                cell.addEventListener('click', handleCellClick);
+            });
+            newGameBtn.addEventListener('click', resetGame);
+            resetScoresBtn.addEventListener('click', resetAll);
+            vsPlayerBtn.addEventListener('click', () => setMode(false));
+            vsAIBtn.addEventListener('click', () => setMode(true));
+        }
+
+        function setMode(isAI) {
+            vsAI = isAI;
+            vsPlayerBtn.classList.toggle('active', !isAI);
+            vsAIBtn.classList.toggle('active', isAI);
+            resetGame();
+        }
+
+        function handleCellClick(e) {
+            const index = parseInt(e.target.dataset.index);
+
+            if (board[index] !== '' || !gameActive) return;
+
+            makeMove(index, currentPlayer);
+
+            if (gameActive && vsAI && currentPlayer === 'O') {
+                setTimeout(makeAIMove, 400);
+            }
+        }
+
+        function makeMove(index, player) {
+            board[index] = player;
+            const cell = cells[index];
+            cell.textContent = player;
+            cell.classList.add(player.toLowerCase());
+
+            if (checkWin(player)) {
+                endGame(player);
+            } else if (board.every(cell => cell !== '')) {
+                endGame(null);
+            } else {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                updateStatus();
+            }
+        }
+
+        function checkWin(player) {
+            return winPatterns.some(pattern => {
+                if (pattern.every(index => board[index] === player)) {
+                    highlightWin(pattern);
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        function highlightWin(pattern) {
+            pattern.forEach(index => {
+                cells[index].classList.add('win');
+            });
+        }
+
+        function endGame(winner) {
+            gameActive = false;
+            if (winner) {
+                statusDisplay.textContent = `Player ${winner} wins!`;
+                statusDisplay.classList.add('winner');
+                scores[winner]++;
+            } else {
+                statusDisplay.textContent = "It's a draw!";
+                statusDisplay.classList.add('draw');
+                scores.draw++;
+            }
+            updateScores();
+        }
+
+        function updateStatus() {
+            const playerName = vsAI && currentPlayer === 'O' ? 'AI' : `Player ${currentPlayer}`;
+            statusDisplay.textContent = `${playerName}'s turn`;
+            statusDisplay.classList.remove('winner', 'draw');
+        }
+
+        function updateScores() {
+            scoreX.textContent = scores.X;
+            scoreO.textContent = scores.O;
+            scoreDraw.textContent = scores.draw;
+        }
+
+        function resetGame() {
+            board = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+            gameActive = true;
+
+            cells.forEach(cell => {
+                cell.textContent = '';
+                cell.classList.remove('x', 'o', 'win');
+            });
+
+            updateStatus();
+        }
+
+        function resetAll() {
+            scores = { X: 0, O: 0, draw: 0 };
+            updateScores();
+            resetGame();
+        }
+
+        // AI Logic (Minimax algorithm)
+        function makeAIMove() {
+            if (!gameActive) return;
+
+            const bestMove = findBestMove();
+            if (bestMove !== -1) {
+                makeMove(bestMove, 'O');
+            }
+        }
+
+        function findBestMove() {
+            let bestScore = -Infinity;
+            let bestMove = -1;
+
+            for (let i = 0; i < 9; i++) {
+                if (board[i] === '') {
+                    board[i] = 'O';
+                    let score = minimax(board, 0, false);
+                    board[i] = '';
+
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMove = i;
+                    }
+                }
+            }
+
+            return bestMove;
+        }
+
+        function minimax(board, depth, isMaximizing) {
+            const winner = getWinner();
+
+            if (winner === 'O') return 10 - depth;
+            if (winner === 'X') return depth - 10;
+            if (board.every(cell => cell !== '')) return 0;
+
+            if (isMaximizing) {
+                let bestScore = -Infinity;
+                for (let i = 0; i < 9; i++) {
+                    if (board[i] === '') {
+                        board[i] = 'O';
+                        bestScore = Math.max(bestScore, minimax(board, depth + 1, false));
+                        board[i] = '';
+                    }
+                }
+                return bestScore;
+            } else {
+                let bestScore = Infinity;
+                for (let i = 0; i < 9; i++) {
+                    if (board[i] === '') {
+                        board[i] = 'X';
+                        bestScore = Math.min(bestScore, minimax(board, depth + 1, true));
+                        board[i] = '';
+                    }
+                }
+                return bestScore;
+            }
+        }
+
+        function getWinner() {
+            for (const pattern of winPatterns) {
+                const [a, b, c] = pattern;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    return board[a];
+                }
+            }
+            return null;
+        }
+
+        // Start the game
+        init();
+    </script>
+</body>
+</html>
